@@ -8,7 +8,8 @@ from random import *
 # Points to note:
 # Matrix elements must be equal but not identical
 # 1 mark for creating the correct matrix
-
+def test():
+    print 'hello'
 def new_game(n):
     matrix = []
 
