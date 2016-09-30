@@ -21,6 +21,7 @@ KEY_DOWN_ALT = "\'\\uf701\'"
 KEY_LEFT_ALT = "\'\\uf702\'"
 KEY_RIGHT_ALT = "\'\\uf703\'"
 
+
 KEY_UP = "'w'"
 KEY_DOWN = "'s'"
 KEY_LEFT = "'a'"
