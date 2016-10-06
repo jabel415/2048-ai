@@ -47,8 +47,33 @@ def add_two(mat):
 # 2 marks for getting two of the three conditions
 # 3 marks for correct checking
 
+##Find max tile value
+##Author: Eva Yang
+def max_tile(mat):
+    max=0
+    for rows in mat:
+        row = rows
+        for tile in range(len(row)):
+            if row[tile]>max:
+                max=row[tile]
+    return max
+
+##Find score
+##Author: Eva Yang
+def score(mat):
+    score=0
+    for rows in mat:
+        row = rows
+        for tile in range(len(row)):
+            score=score+row[tile]
+    return score
+
+
+
 def game_state(mat):
     print mat
+    print max_tile(mat)
+    print score(mat)
     for i in range(len(mat)):
         for j in range(len(mat[0])):
             if mat[i][j]==2048:
