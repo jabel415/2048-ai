@@ -1,6 +1,8 @@
 from Tkinter import *
 from logic import *
-from random import *
+from numpy import random
+from guiLoop import guiLoop
+import pyautogui as gui
 
 SIZE = 500
 GRID_LEN = 4
@@ -44,9 +46,11 @@ class GameGrid(Frame):
         self.init_grid()
         self.init_matrix()
         self.update_grid_cells()
-
+        self.gameOver()
         self.mainloop()
 
+    def gameOver(self):
+        self.gameOver = False
     def init_grid(self):
         background = Frame(self, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
         background.grid()
@@ -85,6 +89,8 @@ class GameGrid(Frame):
 
     def key_down(self, event):
         key = repr(event.char)
+        if key in "'r'":
+            self.randomPlayer()
         if key in self.commands:
             self.matrix, done = self.commands[repr(event.char)](self.matrix)
             if done:
@@ -97,6 +103,7 @@ class GameGrid(Frame):
                 if game_state(self.matrix) == 'lose':
                     self.grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
                     self.grid_cells[1][2].configure(text="Lose!", bg=BACKGROUND_COLOR_CELL_EMPTY)
+                    self.gameOver = True
 
     def generate_next(self):
         index = (self.gen(), self.gen())
@@ -104,5 +111,11 @@ class GameGrid(Frame):
             index = (self.gen(), self.gen())
         self.matrix[index[0]][index[1]] = 2
 
+    @guiLoop
+    def randomPlayer(self):
+        while self.gameOver == False:
+            char = random.choice(["w", "a", "s", "d"])
+            gui.typewrite(char)
+            self.update()
 
 gamegrid = GameGrid()

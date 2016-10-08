@@ -8,8 +8,6 @@ from random import *
 # Points to note:
 # Matrix elements must be equal but not identical
 # 1 mark for creating the correct matrix
-def test():
-    print 'hello'
 def new_game(n):
     matrix = []
 
@@ -71,9 +69,6 @@ def score(mat):
 
 
 def game_state(mat):
-    print mat
-    print max_tile(mat)
-    print score(mat)
     for i in range(len(mat)):
         for j in range(len(mat[0])):
             if mat[i][j]==2048:
