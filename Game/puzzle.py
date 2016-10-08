@@ -1,7 +1,6 @@
 from Tkinter import *
 from logic import *
 from numpy import random
-from guiLoop import guiLoop
 import pyautogui as gui
 
 SIZE = 500
@@ -111,7 +110,7 @@ class GameGrid(Frame):
             index = (self.gen(), self.gen())
         self.matrix[index[0]][index[1]] = 2
 
-    @guiLoop
+
     def randomPlayer(self):
         while self.gameOver == False:
             char = random.choice(["w", "a", "s", "d"])
