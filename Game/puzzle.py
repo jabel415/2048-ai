@@ -49,9 +49,6 @@ class GameGrid(Frame):
         self.update_grid_cells()
         self.time = datetime.now()
         self.mainloop()
-
-    def gameOver(self):
-        self.gameOver = False
     def init_grid(self):
         background = Frame(self, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
         background.grid()
@@ -67,10 +64,8 @@ class GameGrid(Frame):
                 grid_row.append(t)
 
             self.grid_cells.append(grid_row)
-
     def gen(self):
         return randint(0, GRID_LEN - 1)
-
     def init_matrix(self):
         self.matrix = new_game(4)
 
@@ -93,21 +88,15 @@ class GameGrid(Frame):
         if key in "'r'":
             self.randomPlayer()
         if key in self.commands:
-            self.matrix, done = self.commands[repr(event.char)](self.matrix)
-            if done:
-                self.matrix = add_two(self.matrix)
-                self.update_grid_cells()
-                done = False
-                if game_state(self.matrix) == 'win':
-                    self.gameOver('win')
-                if game_state(self.matrix) == 'lose':
-                    self.gameOver('lose')
+            self.makeMove(key)
+            self.gameOver()
 
-    def gameOver(self,status):
-        if status == 'win':
+#checks wether the game is won or lost and updates grid to display state
+    def gameOver(self):
+        if game_state(self.matrix) == 'win':
             self.grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
             self.grid_cells[1][2].configure(text="Win!", bg=BACKGROUND_COLOR_CELL_EMPTY)
-        if status == 'lose':
+        if game_state(self.matrix) == 'lose':
             self.grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
             self.grid_cells[1][2].configure(text="Lose!", bg=BACKGROUND_COLOR_CELL_EMPTY)
             self.gameOver = True
@@ -117,21 +106,26 @@ class GameGrid(Frame):
             index = (self.gen(), self.gen())
         self.matrix[index[0]][index[1]] = 2
 
+#take input KEY_UP ,KEY_DOWN ,KEY_LEFT,KEY_RIGHT and updates the grid based on move
+    def makeMove(self,move):
+        self.matrix, done = self.commands[move](self.matrix)
+        if done:
+            self.matrix = add_two(self.matrix)
+            self.update_grid_cells()
+            self.update()
+            
+# this is a random ai player.
     def randomPlayer(self):
         while game_state(self.matrix) != 'lose':
             data["moves"] += 1
             data["maxTile"] = max_tile(self.matrix)
             data["score"] = score(self.matrix)
             char = random.choice([KEY_UP, KEY_RIGHT, KEY_LEFT, KEY_DOWN])
-            self.matrix, done = self.commands[char](self.matrix)
-            if done:
-                self.matrix = add_two(self.matrix)
-                self.update_grid_cells()
-                self.update()
+            self.makeMove(char)
             time = datetime.now() - self.time
             data["time"] = str(time)
         with open("data.txt", "a") as myfile:
             myfile.write(str(data)+'\n')
-
-        self.gameOver('lose');
+        self.gameOver()
 gamegrid = GameGrid()
+
