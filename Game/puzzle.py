@@ -1,7 +1,7 @@
 from Tkinter import *
 from logic import *
 from numpy import random
-import pyautogui as gui
+from datetime import datetime
 
 SIZE = 500
 GRID_LEN = 4
@@ -29,6 +29,8 @@ KEY_LEFT = "'a'"
 KEY_RIGHT = "'d'"
 
 
+data = {"score":0,"moves":0,"maxTile":0,"time":0,"win":False}
+
 class GameGrid(Frame):
     def __init__(self):
         Frame.__init__(self)
@@ -45,7 +47,7 @@ class GameGrid(Frame):
         self.init_grid()
         self.init_matrix()
         self.update_grid_cells()
-        self.gameOver()
+        self.time = datetime.now()
         self.mainloop()
 
     def gameOver(self):
@@ -97,24 +99,39 @@ class GameGrid(Frame):
                 self.update_grid_cells()
                 done = False
                 if game_state(self.matrix) == 'win':
-                    self.grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
-                    self.grid_cells[1][2].configure(text="Win!", bg=BACKGROUND_COLOR_CELL_EMPTY)
+                    self.gameOver('win')
                 if game_state(self.matrix) == 'lose':
-                    self.grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
-                    self.grid_cells[1][2].configure(text="Lose!", bg=BACKGROUND_COLOR_CELL_EMPTY)
-                    self.gameOver = True
+                    self.gameOver('lose')
 
+    def gameOver(self,status):
+        if status == 'win':
+            self.grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
+            self.grid_cells[1][2].configure(text="Win!", bg=BACKGROUND_COLOR_CELL_EMPTY)
+        if status == 'lose':
+            self.grid_cells[1][1].configure(text="You", bg=BACKGROUND_COLOR_CELL_EMPTY)
+            self.grid_cells[1][2].configure(text="Lose!", bg=BACKGROUND_COLOR_CELL_EMPTY)
+            self.gameOver = True
     def generate_next(self):
         index = (self.gen(), self.gen())
         while self.matrix[index[0]][index[1]] != 0:
             index = (self.gen(), self.gen())
         self.matrix[index[0]][index[1]] = 2
 
-
     def randomPlayer(self):
-        while self.gameOver == False:
-            char = random.choice(["w", "a", "s", "d"])
-            gui.typewrite(char)
-            self.update()
+        while game_state(self.matrix) != 'lose':
+            data["moves"] += 1
+            data["maxTile"] = max_tile(self.matrix)
+            data["score"] = score(self.matrix)
+            char = random.choice([KEY_UP, KEY_RIGHT, KEY_LEFT, KEY_DOWN])
+            self.matrix, done = self.commands[char](self.matrix)
+            if done:
+                self.matrix = add_two(self.matrix)
+                self.update_grid_cells()
+                self.update()
+            time = datetime.now() - self.time
+            data["time"] = str(time)
+        with open("data.txt", "a") as myfile:
+            myfile.write(str(data)+'\n')
 
+        self.gameOver('lose');
 gamegrid = GameGrid()
